@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LearnHub — Employee Learning Portal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,500&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --bg: #0E1117;
+  --surface: #161B26;
+  --surface2: #1E2535;
+  --border: #2A3347;
+  --text: #E8ECF4;
+  --muted: #6B7A99;
+  --ak: #F59E0B;   /* Keuangan */
+  --ah: #10B981;   /* Kesehatan */
+  --am: #818CF8;   /* Mindset */
+  --amk: #F97316; /* Marketing */
+}
+
+body { font-family:'Sora',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+
+/* SCREENS */
+.screen { display:none; min-height:100vh; }
+.screen.active { display:block; }
+
+/* ANIMATIONS */
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+.fade-up { animation:fadeUp .5s ease both; }
+.fade-in { animation:fadeIn .4s ease both; }
+
+/* ═══════════════════════════════
+   LOGIN SCREEN
+═══════════════════════════════ */
+#login {
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; padding:24px;
+  background: radial-gradient(ellipse at 20% 50%, rgba(249,115,22,.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(129,140,248,.08) 0%, transparent 60%),
+              var(--bg);
+}
+.login-box {
+  width:100%; max-width:440px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:24px; padding:48px 40px;
+  animation:fadeUp .6s ease both;
+}
+.login-logo {
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:36px;
+}
+.login-logo-icon {
+  width:48px; height:48px; border-radius:14px;
+  background:linear-gradient(135deg,var(--amk),#FB923C);
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px;
+}
+.login-logo-text { font-family:'Lora',serif; font-size:22px; font-weight:700; }
+.login-logo-text span { color:var(--amk); }
+.login-box h2 { font-family:'Lora',serif; font-size:26px; font-weight:700; margin-bottom:8px; }
+.login-box p { font-size:14px; color:var(--muted); margin-bottom:32px; line-height:1.6; }
+.form-group { margin-bottom:18px; }
+.form-group label { display:block; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:8px; }
+.form-group input, .form-group select {
+  width:100%; padding:13px 16px;
+  background:var(--surface2); border:1.5px solid var(--border);
+  border-radius:12px; color:var(--text);
+  font-family:inherit; font-size:14px;
+  transition:border-color .2s, box-shadow .2s; outline:none;
+}
+.form-group input:focus, .form-group select:focus {
+  border-color:var(--amk);
+  box-shadow:0 0 0 3px rgba(249,115,22,.15);
+}
+.form-group select option { background:var(--surface2); }
+.login-btn {
+  width:100%; padding:14px;
+  background:linear-gradient(135deg,var(--amk),#FB923C);
+  color:white; border:none; border-radius:12px;
+  font-family:inherit; font-size:15px; font-weight:700;
+  cursor:pointer; margin-top:8px;
+  transition:opacity .2s, transform .2s;
+}
+.login-btn:hover { opacity:.9; transform:translateY(-1px); }
+.login-error {
+  display:none; margin-top:14px; padding:10px 14px;
+  background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3);
+  border-radius:8px; font-size:13px; color:#FCA5A5; text-align:center;
+}
+.login-error.show { display:block; }
+.login-divider { text-align:center; margin:24px 0 0; font-size:12px; color:var(--muted); }
+.login-divider a { color:var(--amk); text-decoration:none; font-weight:600; }
+.login-divider a:hover { text-decoration:underline; }
+
+/* ═══════════════════════════════
+   TOPBAR
+═══════════════════════════════ */
+.topbar {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  background:rgba(14,17,23,.92); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0 28px; height:60px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.tb-brand { font-family:'Lora',serif; font-size:18px; font-weight:700; }
+.tb-brand span { color:var(--amk); }
+.tb-user { display:flex; align-items:center; gap:12px; }
+.tb-avatar {
+  width:36px; height:36px; border-radius:50%;
+  background:linear-gradient(135deg,var(--amk),#FB923C);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; color:white;
+}
+.tb-info { line-height:1.3; }
+.tb-name { font-size:13px; font-weight:600; }
+.tb-outlet { font-size:11px; color:var(--muted); }
+.tb-logout {
+  font-size:12px; color:var(--muted); cursor:pointer;
+  padding:6px 12px; border-radius:8px; border:1px solid var(--border);
+  background:none; font-family:inherit;
+  transition:all .2s;
+}
+.tb-logout:hover { color:var(--text); border-color:var(--muted); }
+
+/* ═══════════════════════════════
+   DASHBOARD SCREEN
+═══════════════════════════════ */
+#dashboard { padding-top:60px; }
+.dash-hero {
+  padding:48px 28px 36px;
+  max-width:1100px; margin:0 auto;
+}
+.dash-greeting { font-size:14px; color:var(--muted); margin-bottom:6px; }
+.dash-greeting strong { color:var(--amk); }
+.dash-title { font-family:'Lora',serif; font-size:clamp(24px,4vw,38px); font-weight:700; line-height:1.2; margin-bottom:24px; }
+
+/* OVERALL PROGRESS */
+.overall-progress {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:20px; padding:24px 28px;
+  display:flex; align-items:center; gap:24px; flex-wrap:wrap;
+  margin-bottom:40px;
+}
+.op-ring { position:relative; width:80px; height:80px; flex-shrink:0; }
+.op-ring svg { transform:rotate(-90deg); }
+.op-ring .ring-bg { fill:none; stroke:var(--border); stroke-width:6; }
+.op-ring .ring-fill { fill:none; stroke:var(--amk); stroke-width:6; stroke-linecap:round; transition:stroke-dashoffset .8s ease; }
+.op-ring .ring-num {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Lora',serif; font-size:18px; font-weight:700;
+}
+.op-info h3 { font-size:16px; font-weight:700; margin-bottom:4px; }
+.op-info p { font-size:13px; color:var(--muted); line-height:1.6; }
+.op-stats { display:flex; gap:24px; margin-left:auto; flex-wrap:wrap; }
+.op-stat { text-align:center; }
+.op-stat-num { font-family:'Lora',serif; font-size:24px; font-weight:700; color:var(--amk); }
+.op-stat-label { font-size:11px; color:var(--muted); margin-top:2px; }
+
+/* ACADEMY GRID */
+.section-title {
+  font-size:12px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.12em; color:var(--muted); margin-bottom:16px;
+}
+.academy-grid {
+  max-width:1100px; margin:0 auto;
+  padding:0 28px 80px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+}
+.academy-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:20px; padding:28px;
+  cursor:pointer; position:relative; overflow:hidden;
+  transition:transform .3s, box-shadow .3s, border-color .3s;
+}
+.academy-card:hover:not(.locked) { transform:translateY(-6px); box-shadow:0 20px 60px rgba(0,0,0,.4); border-color:var(--ac); }
+.academy-card.locked { cursor:default; opacity:.6; }
+.academy-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:var(--ac); transform:scaleX(0); transform-origin:left;
+  transition:transform .4s;
+}
+.academy-card:hover:not(.locked)::before { transform:scaleX(1); }
+.ac-icon-wrap {
+  width:56px; height:56px; border-radius:16px;
+  background:color-mix(in srgb, var(--ac) 15%, transparent);
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px; margin-bottom:18px;
+}
+.ac-badge {
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--ac); margin-bottom:10px;
+}
+.academy-card h3 { font-family:'Lora',serif; font-size:18px; font-weight:700; margin-bottom:8px; line-height:1.3; }
+.academy-card p { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:20px; }
+.ac-progress-bar {
+  height:4px; background:var(--border); border-radius:4px; margin-bottom:10px; overflow:hidden;
+}
+.ac-progress-fill { height:100%; background:var(--ac); border-radius:4px; transition:width .6s ease; }
+.ac-meta { display:flex; justify-content:space-between; align-items:center; }
+.ac-pct { font-size:12px; font-weight:700; color:var(--ac); }
+.ac-modules { font-size:11px; color:var(--muted); }
+.ac-lock { position:absolute; top:18px; right:18px; font-size:18px; }
+.ac-arrow {
+  width:32px; height:32px; border-radius:50%;
+  background:color-mix(in srgb, var(--ac) 12%, transparent);
+  color:var(--ac); display:flex; align-items:center; justify-content:center;
+  font-size:14px; transition:all .2s;
+}
+.academy-card:hover:not(.locked) .ac-arrow { background:var(--ac); color:white; transform:translateX(3px); }
+
+/* DAILY TIP */
+.daily-tip {
+  max-width:1100px; margin:0 auto 0;
+  padding:0 28px 32px;
+}
+.tip-card {
+  background:linear-gradient(135deg,var(--surface2),var(--surface));
+  border:1px solid var(--border); border-radius:16px; padding:20px 24px;
+  display:flex; gap:16px; align-items:flex-start;
+}
+.tip-icon { font-size:24px; flex-shrink:0; }
+.tip-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--amk); margin-bottom:6px; }
+.tip-text { font-size:14px; line-height:1.7; color:var(--muted); }
+.tip-text strong { color:var(--text); }
+
+/* ═══════════════════════════════
+   ACADEMY SCREEN
+═══════════════════════════════ */
+#academy { padding-top:60px; }
+.academy-back {
+  max-width:860px; margin:0 auto;
+  padding:24px 28px 0;
+}
+.back-link {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:13px; font-weight:600; color:var(--muted);
+  cursor:pointer; transition:color .2s;
+  background:none; border:none; font-family:inherit; padding:0;
+}
+.back-link:hover { color:var(--text); }
+.academy-hero {
+  max-width:860px; margin:0 auto;
+  padding:28px 28px 36px;
+}
+.ah-badge {
+  display:inline-block; font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.1em;
+  color:var(--ac); padding:5px 14px; border-radius:20px;
+  background:color-mix(in srgb, var(--ac) 12%, transparent);
+  margin-bottom:14px;
+}
+.academy-hero h2 { font-family:'Lora',serif; font-size:clamp(24px,4vw,36px); font-weight:700; margin-bottom:10px; }
+.academy-hero p { font-size:15px; color:var(--muted); line-height:1.7; margin-bottom:24px; }
+.ah-progress {
+  display:flex; align-items:center; gap:14px;
+  padding:16px 20px; background:var(--surface); border:1px solid var(--border);
+  border-radius:14px;
+}
+.ah-progress-bar { flex:1; height:6px; background:var(--border); border-radius:6px; overflow:hidden; }
+.ah-progress-fill { height:100%; background:var(--ac); border-radius:6px; transition:width .6s ease; }
+.ah-pct { font-size:13px; font-weight:700; color:var(--ac); flex-shrink:0; }
+.ah-pct-label { font-size:12px; color:var(--muted); flex-shrink:0; }
+
+/* MODULE LIST */
+.module-list {
+  max-width:860px; margin:0 auto;
+  padding:0 28px 80px;
+  display:flex; flex-direction:column; gap:14px;
+}
+.module-item {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:22px 24px;
+  display:flex; align-items:center; gap:18px;
+  cursor:pointer; transition:all .3s;
+}
+.module-item:hover:not(.locked-mod) { border-color:var(--ac); transform:translateX(4px); }
+.module-item.locked-mod { cursor:default; opacity:.5; }
+.mi-num {
+  width:44px; height:44px; border-radius:12px; flex-shrink:0;
+  background:color-mix(in srgb, var(--ac) 12%, transparent);
+  color:var(--ac); font-weight:800; font-size:15px;
+  display:flex; align-items:center; justify-content:center;
+}
+.mi-num.done { background:var(--ac); color:white; }
+.mi-info { flex:1; }
+.mi-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:4px; }
+.mi-title { font-size:15px; font-weight:700; margin-bottom:3px; }
+.mi-desc { font-size:12px; color:var(--muted); }
+.mi-status {
+  font-size:12px; font-weight:600; flex-shrink:0;
+  padding:5px 12px; border-radius:20px;
+}
+.mi-status.done { background:color-mix(in srgb,var(--ac) 12%,transparent); color:var(--ac); }
+.mi-status.pending { background:var(--border); color:var(--muted); }
+.mi-status.locked { background:var(--border); color:var(--muted); }
+
+/* ═══════════════════════════════
+   MODULE SCREEN
+═══════════════════════════════ */
+#module-view { padding-top:60px; }
+.module-content { max-width:820px; margin:0 auto; padding:40px 28px 100px; }
+.mod-header { margin-bottom:36px; }
+.mod-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--ac); padding:5px 14px; border-radius:20px;
+  background:color-mix(in srgb, var(--ac) 12%, transparent);
+  margin-bottom:14px;
+}
+.mod-header h2 { font-family:'Lora',serif; font-size:clamp(22px,3.5vw,34px); font-weight:700; margin-bottom:10px; }
+.mod-header p { font-size:15px; color:var(--muted); line-height:1.7; }
+
+/* CONTENT BLOCKS */
+.content-block { margin-bottom:30px; }
+.block-title {
+  font-size:16px; font-weight:700; margin-bottom:12px;
+  display:flex; align-items:center; gap:8px; color:var(--text);
+}
+.block-dot { width:8px; height:8px; border-radius:50%; background:var(--ac); flex-shrink:0; }
+.prose { font-size:14px; color:#9BA8C0; line-height:1.8; }
+.prose p { margin-bottom:10px; }
+.prose strong { color:var(--text); font-weight:600; }
+
+.info-card {
+  background:color-mix(in srgb, var(--ac) 6%, var(--surface));
+  border:1px solid color-mix(in srgb, var(--ac) 20%, transparent);
+  border-left:4px solid var(--ac); border-radius:12px; padding:16px 18px; margin:16px 0;
+}
+.info-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--ac); margin-bottom:6px; }
+.info-card p { font-size:13px; line-height:1.7; color:#9BA8C0; }
+
+.cards-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:16px 0; }
+.mini-card {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:12px; padding:16px;
+}
+.mini-card .mc-icon { font-size:22px; margin-bottom:8px; }
+.mini-card h5 { font-size:13px; font-weight:700; margin-bottom:5px; color:var(--text); }
+.mini-card p { font-size:12px; color:var(--muted); line-height:1.6; }
+
+.case-study {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:14px; padding:22px; margin:16px 0;
+}
+.cs-tag { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:var(--ac); margin-bottom:10px; }
+.case-study h4 { font-family:'Lora',serif; font-size:16px; font-weight:700; margin-bottom:8px; }
+.case-study p { font-size:13px; color:var(--muted); line-height:1.7; }
+.cs-result { margin-top:12px; padding:12px 14px; background:rgba(255,255,255,.04); border-radius:8px; font-size:12px; color:#9BA8C0; }
+.cs-result strong { color:var(--ac); }
+
+.highlight-box { border-radius:12px; padding:16px 18px; margin:16px 0; display:flex; gap:12px; }
+.highlight-box.warning { background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.2); }
+.highlight-box.tip { background:rgba(99,102,241,.08); border:1px solid rgba(99,102,241,.2); }
+.hb-icon { font-size:20px; flex-shrink:0; }
+.hb-text h5 { font-size:13px; font-weight:700; margin-bottom:4px; }
+.hb-text p { font-size:12px; line-height:1.6; color:var(--muted); }
+
+.check-list { display:flex; flex-direction:column; gap:10px; }
+.check-item {
+  display:flex; align-items:flex-start; gap:12px; padding:14px 16px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; cursor:pointer; transition:all .2s;
+}
+.check-item:hover { border-color:var(--ac); }
+.check-item.checked { background:color-mix(in srgb,var(--ac) 8%,var(--surface2)); border-color:var(--ac); }
+.check-box { width:20px; height:20px; border-radius:6px; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; transition:all .2s; }
+.check-item.checked .check-box { background:var(--ac); border-color:var(--ac); color:white; }
+.check-text h5 { font-size:13px; font-weight:700; margin-bottom:3px; color:var(--text); }
+.check-text p { font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* PROMO TYPES */
+.promo-type { border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:10px; cursor:pointer; transition:border-color .2s; }
+.promo-type:hover { border-color:var(--ac); }
+.promo-type-header { display:flex; align-items:center; gap:12px; padding:14px 16px; background:var(--surface); }
+.promo-type-icon { width:38px; height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; background:color-mix(in srgb,var(--ac) 12%,transparent); flex-shrink:0; }
+.promo-type-header h5 { font-size:14px; font-weight:700; color:var(--text); }
+.promo-type-header p { font-size:11px; color:var(--muted); }
+.promo-toggle { margin-left:auto; color:var(--muted); transition:transform .3s; }
+.promo-type.open .promo-toggle { transform:rotate(180deg); }
+.promo-body { max-height:0; overflow:hidden; transition:max-height .4s ease; background:var(--surface2); border-top:1px solid var(--border); }
+.promo-type.open .promo-body { max-height:280px; }
+.promo-body-inner { padding:14px 16px; }
+.promo-body-inner p { font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:10px; }
+.pro-con { display:flex; gap:10px; flex-wrap:wrap; }
+.pro,.con { flex:1; min-width:130px; padding:10px 12px; border-radius:8px; font-size:12px; line-height:1.5; }
+.pro { background:rgba(16,185,129,.08); color:#6EE7B7; border:1px solid rgba(16,185,129,.2); }
+.con { background:rgba(239,68,68,.08); color:#FCA5A5; border:1px solid rgba(239,68,68,.2); }
+.pro strong,.con strong { display:block; font-size:11px; font-weight:700; margin-bottom:3px; }
+
+/* MATCH TABLE */
+.match-table { width:100%; border-collapse:collapse; margin:16px 0; border-radius:12px; overflow:hidden; }
+.match-table th { background:var(--surface2); color:var(--muted); padding:12px 14px; font-size:12px; text-align:left; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+.match-table td { padding:12px 14px; font-size:12px; border-bottom:1px solid var(--border); vertical-align:top; background:var(--surface); }
+.match-table tr:last-child td { border-bottom:none; }
+.match-table tr:hover td { background:var(--surface2); }
+.goal-cell { font-weight:700; color:var(--ac); }
+.tag-list { display:flex; flex-wrap:wrap; gap:5px; }
+.tag { font-size:11px; font-weight:600; padding:3px 9px; border-radius:20px; background:color-mix(in srgb,var(--ac) 12%,transparent); color:var(--ac); }
+
+/* WORKSHEET */
+.worksheet { background:var(--surface2); border:1px dashed var(--border); border-radius:16px; padding:24px; margin:16px 0; }
+.worksheet h4 { font-family:'Lora',serif; font-size:17px; font-weight:700; margin-bottom:4px; }
+.ws-sub { font-size:12px; color:var(--muted); margin-bottom:20px; }
+.ws-field { margin-bottom:14px; }
+.ws-field label { display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:6px; }
+.ws-field input,.ws-field textarea,.ws-field select {
+  width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:10px;
+  font-family:inherit; font-size:13px; background:var(--bg); color:var(--text);
+  transition:border-color .2s; outline:none;
+}
+.ws-field input:focus,.ws-field textarea:focus,.ws-field select:focus { border-color:var(--ac); }
+.ws-field select option { background:var(--surface2); }
+.ws-field textarea { resize:vertical; min-height:72px; }
+.ws-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.ws-submit { display:flex; align-items:center; gap:8px; padding:11px 22px; background:var(--ac); color:white; border:none; border-radius:10px; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; margin-top:6px; transition:opacity .2s; }
+.ws-submit:hover { opacity:.85; }
+.ws-result { display:none; margin-top:16px; padding:14px; background:color-mix(in srgb,var(--ac) 8%,var(--bg)); border:1px solid color-mix(in srgb,var(--ac) 25%,transparent); border-radius:10px; font-size:13px; line-height:1.8; color:var(--muted); }
+.ws-result.show { display:block; animation:fadeIn .4s ease; }
+.ws-result strong { color:var(--text); }
+
+/* START QUIZ CTA */
+.start-quiz-cta { margin-top:44px; background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:28px; text-align:center; }
+.sqc-icon { font-size:36px; margin-bottom:10px; }
+.start-quiz-cta h3 { font-family:'Lora',serif; font-size:20px; margin-bottom:6px; }
+.start-quiz-cta p { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:18px; }
+.start-quiz-btn { display:inline-flex; align-items:center; gap:8px; padding:12px 26px; background:var(--ac); color:white; border:none; border-radius:10px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; transition:opacity .2s,transform .2s; }
+.start-quiz-btn:hover { opacity:.85; transform:translateY(-1px); }
+
+/* ═══════════════════════════════
+   QUIZ SCREEN
+═══════════════════════════════ */
+#quiz-view { padding-top:60px; }
+.quiz-content { max-width:680px; margin:0 auto; padding:40px 28px 100px; }
+.qv-header { margin-bottom:28px; }
+.qv-badge { display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--ac); padding:5px 14px; border-radius:20px; background:color-mix(in srgb,var(--ac) 12%,transparent); margin-bottom:12px; }
+.qv-header h2 { font-family:'Lora',serif; font-size:clamp(20px,3vw,28px); font-weight:700; margin-bottom:6px; }
+.qv-header p { font-size:13px; color:var(--muted); }
+.quiz-counter { display:flex; align-items:center; gap:10px; margin-bottom:28px; }
+.qc-pill { font-size:12px; font-weight:700; padding:4px 12px; border-radius:20px; background:color-mix(in srgb,var(--ac) 12%,transparent); color:var(--ac); }
+.q-dots { display:flex; gap:6px; }
+.q-dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:background .3s; }
+.q-dot.done { background:var(--ac); }
+.q-dot.current { background:var(--ac); opacity:.5; }
+.sq-text { font-size:16px; font-weight:600; line-height:1.55; margin-bottom:20px; color:var(--text); }
+.sq-options { display:flex; flex-direction:column; gap:10px; }
+.sq-opt {
+  display:flex; align-items:center; gap:12px; padding:14px 16px;
+  border:2px solid var(--border); border-radius:12px;
+  cursor:pointer; font-size:13px; background:var(--surface);
+  transition:all .2s; color:var(--text);
+}
+.sq-opt:hover:not(.disabled) { border-color:var(--ac); background:color-mix(in srgb,var(--ac) 6%,var(--surface)); transform:translateX(4px); }
+.sq-opt.correct { background:rgba(16,185,129,.08); border-color:#10B981; color:#6EE7B7; }
+.sq-opt.wrong { background:rgba(239,68,68,.08); border-color:#EF4444; color:#FCA5A5; }
+.sq-opt.disabled { cursor:default; pointer-events:none; }
+.sq-mark { width:22px; height:22px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; transition:all .2s; }
+.sq-opt.correct .sq-mark { background:#10B981; border-color:#10B981; color:white; }
+.sq-opt.wrong .sq-mark { background:#EF4444; border-color:#EF4444; color:white; }
+.sq-feedback { display:none; margin-top:12px; padding:12px 14px; border-radius:8px; font-size:13px; line-height:1.6; }
+.sq-feedback.show-correct { display:block; background:rgba(16,185,129,.08); color:#6EE7B7; border:1px solid rgba(16,185,129,.2); }
+.sq-feedback.show-wrong { display:block; background:rgba(239,68,68,.08); color:#FCA5A5; border:1px solid rgba(239,68,68,.2); }
+.sq-next-btn { display:none; margin-top:16px; width:100%; padding:13px; background:var(--ac); color:white; border:none; border-radius:10px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; transition:opacity .2s; }
+.sq-next-btn.visible { display:block; animation:fadeIn .4s .3s ease both; }
+.sq-next-btn:hover { opacity:.85; }
+
+/* QUIZ FINAL */
+.quiz-final { display:none; text-align:center; padding:40px 0; animation:fadeUp .5s ease both; }
+.quiz-final.show { display:block; }
+.qf-circle { width:100px; height:100px; border-radius:50%; background:var(--ac); color:white; display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0 auto 18px; box-shadow:0 0 40px color-mix(in srgb,var(--ac) 40%,transparent); }
+.qf-num { font-family:'Lora',serif; font-size:30px; font-weight:700; line-height:1; }
+.qf-total { font-size:12px; opacity:.8; }
+.quiz-final h3 { font-family:'Lora',serif; font-size:24px; margin-bottom:8px; }
+.quiz-final p { font-size:14px; color:var(--muted); max-width:380px; margin:0 auto 24px; line-height:1.7; }
+.qf-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.btn-primary { display:inline-flex; align-items:center; gap:8px; padding:12px 22px; background:var(--ac); color:white; border:none; border-radius:10px; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; transition:opacity .2s,transform .2s; }
+.btn-primary:hover { opacity:.85; transform:translateY(-1px); }
+.btn-secondary { display:inline-flex; align-items:center; gap:8px; padding:12px 22px; background:transparent; color:var(--text); border:1.5px solid var(--border); border-radius:10px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; }
+.btn-secondary:hover { border-color:var(--muted); }
+
+/* COMPLETE BANNER */
+.complete-banner { background:linear-gradient(135deg,var(--surface2),var(--surface)); border:1px solid var(--border); border-radius:20px; padding:28px; text-align:center; margin-top:44px; }
+.complete-banner .cb-icon { font-size:44px; margin-bottom:12px; }
+.complete-banner h3 { font-family:'Lora',serif; font-size:22px; margin-bottom:6px; }
+.complete-banner p { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:18px; }
+
+/* BRANCH CARDS */
+.branch-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px; cursor:pointer; transition:transform .3s,border-color .3s; margin-bottom:10px; }
+.branch-card:hover { transform:translateY(-2px); border-color:var(--bc); }
+.branch-card.open { border-color:var(--bc); }
+.bc-head { display:flex; align-items:center; gap:12px; }
+.bc-ico { width:40px; height:40px; border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px; background:color-mix(in srgb,var(--bc) 12%,transparent); }
+.bc-ttl h4 { font-size:14px; font-weight:700; color:var(--text); }
+.bc-ttl span { font-size:11px; color:var(--bc); font-weight:600; text-transform:uppercase; letter-spacing:.06em; }
+.bc-tog { margin-left:auto; color:var(--muted); transition:transform .3s; }
+.branch-card.open .bc-tog { transform:rotate(180deg); }
+.bc-body { max-height:0; overflow:hidden; transition:max-height .4s ease; }
+.branch-card.open .bc-body { max-height:280px; }
+.bc-body-inner { padding:12px 0 4px; border-top:1px solid var(--border); margin-top:12px; }
+.bc-body-inner p { font-size:12px; color:var(--muted); line-height:1.7; margin-bottom:8px; }
+.bc-subs { display:flex; flex-direction:column; gap:7px; }
+.bc-sub { display:flex; align-items:flex-start; gap:8px; font-size:12px; }
+.bc-sdot { width:5px; height:5px; border-radius:50%; background:var(--bc); margin-top:6px; flex-shrink:0; }
+.bc-stxt strong { display:block; font-size:12px; font-weight:600; color:var(--text); }
+.bc-stxt span { font-size:11px; color:var(--muted); }
+
+.promo-spotlight { background:color-mix(in srgb,var(--ac) 6%,var(--surface2)); border:1.5px solid color-mix(in srgb,var(--ac) 20%,transparent); border-radius:14px; padding:18px 20px; margin-top:16px; display:flex; gap:14px; }
+.ps-icon { font-size:28px; flex-shrink:0; }
+.ps-text h5 { font-size:14px; font-weight:700; margin-bottom:5px; }
+.ps-text p { font-size:12px; line-height:1.7; color:var(--muted); }
+.ps-text strong { color:var(--ac); }
+
+@media(max-width:640px){
+  .login-box{padding:32px 24px}
+  .academy-grid{grid-template-columns:1fr}
+  .ws-row{grid-template-columns:1fr}
+  .cards-row{grid-template-columns:1fr}
+  .qf-actions{flex-direction:column}
+  .op-stats{margin-left:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<div class="topbar" id="topbar" style="display:none">
+  <div class="tb-brand">Learn<span>Hub</span></div>
+  <div class="tb-user">
+    <div class="tb-avatar" id="tb-avatar">A</div>
+    <div class="tb-info">
+      <div class="tb-name" id="tb-name">-</div>
+      <div class="tb-outlet" id="tb-outlet">-</div>
+    </div>
+    <button class="tb-logout" onclick="logout()">Keluar</button>
+  </div>
+</div>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login" class="screen active">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">🎓</div>
+      <div class="login-logo-text">Learn<span>Hub</span></div>
+    </div>
+    <h2>Selamat Datang!</h2>
+    <p>Platform belajar untuk karyawan. Masukkan nama lengkap dan outlet kamu untuk mulai.</p>
+    <div class="form-group">
+      <label>Nama Lengkap</label>
+      <input type="text" id="inp-nama" placeholder="cth: Budi Santoso" autocomplete="off"/>
+    </div>
+    <div class="form-group">
+      <label>Outlet / Cabang</label>
+      <select id="inp-outlet">
+        <option value="">— Pilih Outlet —</option>
+        <option>Jakarta Pusat</option>
+        <option>Jakarta Selatan</option>
+        <option>Jakarta Utara</option>
+        <option>Jakarta Barat</option>
+        <option>Jakarta Timur</option>
+        <option>Tangerang</option>
+        <option>Bekasi</option>
+        <option>Depok</option>
+        <option>Bogor</option>
+        <option>Bandung</option>
+        <option>Surabaya</option>
+        <option>Kantor Pusat</option>
+      </select>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Masuk & Mulai Belajar →</button>
+    <div class="login-error" id="login-error">Mohon isi nama lengkap dan pilih outlet terlebih dahulu.</div>
+    <div class="login-divider">Admin HR? <a href="hr-dashboard.html">Masuk ke Dashboard HR →</a></div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div id="dashboard" class="screen">
+  <div class="dash-hero fade-up">
+    <div class="dash-greeting">Halo, <strong id="dash-name">-</strong> 👋</div>
+    <div class="dash-title">Apa yang ingin kamu<br>pelajari hari ini?</div>
+    <div class="overall-progress">
+      <div class="op-ring">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle class="ring-bg" cx="40" cy="40" r="34"/>
+          <circle class="ring-fill" id="ring-fill" cx="40" cy="40" r="34" stroke-dasharray="213.6" stroke-dashoffset="213.6"/>
+        </svg>
+        <div class="ring-num" id="ring-num">0%</div>
+      </div>
+      <div class="op-info">
+        <h3>Progress Keseluruhan</h3>
+        <p id="op-desc">Mulai belajar dari akademi manapun.<br>Setiap modul yang selesai akan tercatat di sini.</p>
+      </div>
+      <div class="op-stats">
+        <div class="op-stat"><div class="op-stat-num" id="stat-modul">0</div><div class="op-stat-label">Modul Selesai</div></div>
+        <div class="op-stat"><div class="op-stat-num" id="stat-quiz">0</div><div class="op-stat-label">Quiz Lulus</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1100px;margin:0 auto;padding:0 28px 8px">
+    <div class="section-title">Pilih Akademi</div>
+  </div>
+
+  <div class="academy-grid">
+    <div class="academy-card" style="--ac:var(--amk)" onclick="openAcademy('marketing')" id="ac-marketing">
+      <div class="ac-icon-wrap">📊</div>
+      <div class="ac-badge">Akademi Marketing</div>
+      <h3>Marketing & Penjualan</h3>
+      <p>Dari cara membuat promo yang tepat hingga memahami perilaku konsumen di lapangan.</p>
+      <div class="ac-progress-bar"><div class="ac-progress-fill" id="prog-marketing" style="width:0%"></div></div>
+      <div class="ac-meta">
+        <span class="ac-pct" id="pct-marketing">0%</span>
+        <span class="ac-modules">6 modul</span>
+        <div class="ac-arrow">→</div>
+      </div>
+    </div>
+
+    <div class="academy-card locked" style="--ac:var(--ak)">
+      <div class="ac-lock">🔒</div>
+      <div class="ac-icon-wrap">💰</div>
+      <div class="ac-badge">Akademi Keuangan</div>
+      <h3>Keuangan Pribadi</h3>
+      <p>Budgeting, menabung, investasi dasar, dan cara kelola gaji agar lebih optimal.</p>
+      <div class="ac-progress-bar"><div class="ac-progress-fill" style="width:0%"></div></div>
+      <div class="ac-meta"><span class="ac-pct">Segera Hadir</span><span class="ac-modules">5 modul</span></div>
+    </div>
+
+    <div class="academy-card locked" style="--ac:var(--ah)">
+      <div class="ac-lock">🔒</div>
+      <div class="ac-icon-wrap">❤️</div>
+      <div class="ac-badge">Akademi Kesehatan</div>
+      <h3>Kesehatan & Gaya Hidup</h3>
+      <p>Pola makan sehat, olahraga rutin, manajemen stres, dan kesehatan mental di tempat kerja.</p>
+      <div class="ac-progress-bar"><div class="ac-progress-fill" style="width:0%"></div></div>
+      <div class="ac-meta"><span class="ac-pct">Segera Hadir</span><span class="ac-modules">5 modul</span></div>
+    </div>
+
+    <div class="academy-card locked" style="--ac:var(--am)">
+      <div class="ac-lock">🔒</div>
+      <div class="ac-icon-wrap">🧠</div>
+      <div class="ac-badge">Akademi Mindset</div>
+      <h3>Mindset & Produktivitas</h3>
+      <p>Growth mindset, manajemen waktu, goal setting, dan cara kerja lebih fokus dan efektif.</p>
+      <div class="ac-progress-bar"><div class="ac-progress-fill" style="width:0%"></div></div>
+      <div class="ac-meta"><span class="ac-pct">Segera Hadir</span><span class="ac-modules">5 modul</span></div>
+    </div>
+  </div>
+
+  <div class="daily-tip">
+    <div class="tip-card">
+      <div class="tip-icon">💡</div>
+      <div>
+        <div class="tip-label">Tips Hari Ini</div>
+        <div class="tip-text" id="daily-tip-text">Memuat tips...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ACADEMY ═══ -->
+<div id="academy" class="screen">
+  <div class="academy-back">
+    <button class="back-link" onclick="goToDashboard()">← Kembali ke Dashboard</button>
+  </div>
+  <div class="academy-hero fade-up">
+    <div class="ah-badge" id="ah-badge">Akademi</div>
+    <h2 id="ah-title">Judul Akademi</h2>
+    <p id="ah-desc">Deskripsi akademi</p>
+    <div class="ah-progress">
+      <span id="ah-pct-label" style="font-size:13px;font-weight:600;color:var(--ac);flex-shrink:0"></span>
+      <div class="ah-progress-bar"><div class="ah-progress-fill" id="ah-fill" style="width:0%"></div></div>
+      <span class="ah-pct-label" id="ah-pct">0 / 0 modul</span>
+    </div>
+  </div>
+  <div class="module-list fade-up" id="module-list"></div>
+</div>
+
+<!-- ═══ MODULE ═══ -->
+<div id="module-view" class="screen">
+  <div class="module-content">
+    <button class="back-link" onclick="goToAcademy()" style="margin-bottom:24px">← Kembali ke Akademi</button>
+    <div id="mod-content"></div>
+  </div>
+</div>
+
+<!-- ═══ QUIZ ═══ -->
+<div id="quiz-view" class="screen">
+  <div class="quiz-content">
+    <button class="back-link" onclick="reviewMaterial()" style="margin-bottom:20px">← Kembali ke Materi</button>
+    <div class="qv-header fade-in">
+      <div class="qv-badge" id="qv-badge"></div>
+      <h2 id="qv-title"></h2>
+      <p>Jawab semua pertanyaan tanpa melihat materi.</p>
+    </div>
+    <div class="quiz-counter">
+      <div class="qc-pill" id="qv-counter">Soal 1</div>
+      <div class="q-dots" id="qv-dots"></div>
+    </div>
+    <div id="qv-question"></div>
+    <div class="quiz-final" id="qv-final">
+      <div class="qf-circle"><div class="qf-num" id="qf-num">0</div><div class="qf-total" id="qf-total">dari 3</div></div>
+      <h3 id="qf-heading">Hasil Quiz</h3>
+      <p id="qf-msg"></p>
+      <div class="qf-actions">
+        <button class="btn-primary" id="qf-next-btn" onclick="goNextFromQuiz()">Lanjut →</button>
+        <button class="btn-secondary" onclick="reviewMaterial()">📖 Lihat Ulang Materi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let currentUser = null;
+let currentAcademy = null;
+let currentModuleId = null;
+let quizAnswered = {};
+let quizScore = 0;
+
+const DAILY_TIPS = [
+  'Sebelum membuat promo, selalu tanya: <strong>"Apa tujuan spesifik promo ini?"</strong> Tujuan yang jelas = eksekusi yang tepat.',
+  'Catat minimal 1 pengeluaran yang bisa dikurangi minggu ini. Langkah kecil ini bisa menghemat jutaan dalam setahun.',
+  'Ambil 5 menit setiap pagi untuk menulis 3 hal yang ingin kamu selesaikan hari ini. Fokus mengalahkan kesibukan.',
+  'Konsumen tidak membeli produk — mereka membeli solusi atas masalah mereka. Jual manfaat, bukan fitur.',
+  'Tidur 7-8 jam bukan kemewahan, tapi investasi. Produktivitas kamu esok hari dimulai dari tidur malam ini.',
+  'Growth mindset: kegagalan bukan akhir, tapi data. Tanya "Apa yang bisa saya pelajari dari ini?"',
+  'Promo diskon besar tidak selalu menguntungkan. Hitung margin dulu sebelum tentukan besaran diskon.',
+  'Minum air putih 2 liter per hari meningkatkan fokus dan energi secara signifikan.',
+];
+
+// ══════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════
+function getKey(uid) { return `lh_progress_${uid}`; }
+function getProgress(uid) {
+  try { return JSON.parse(localStorage.getItem(getKey(uid))) || {}; }
+  catch { return {}; }
+}
+function saveProgress(uid, data) {
+  localStorage.setItem(getKey(uid), JSON.stringify(data));
+  // Also save to master list for HR
+  let allUsers = JSON.parse(localStorage.getItem('lh_all_users') || '[]');
+  const existing = allUsers.find(u => u.id === uid);
+  if (!existing) { allUsers.push({ id: uid, name: currentUser.name, outlet: currentUser.outlet, joined: new Date().toISOString() }); }
+  else { existing.lastActive = new Date().toISOString(); }
+  localStorage.setItem('lh_all_users', JSON.stringify(allUsers));
+  // Save full progress for HR
+  let hrData = JSON.parse(localStorage.getItem('lh_hr_data') || '{}');
+  hrData[uid] = { user: currentUser, progress: data, lastActive: new Date().toISOString() };
+  localStorage.setItem('lh_hr_data', JSON.stringify(hrData));
+}
+
+// ══════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════
+function doLogin() {
+  const nama = document.getElementById('inp-nama').value.trim();
+  const outlet = document.getElementById('inp-outlet').value;
+  const err = document.getElementById('login-error');
+  if (!nama || !outlet) { err.classList.add('show'); return; }
+  err.classList.remove('show');
+  const uid = btoa(encodeURIComponent(nama + '|' + outlet)).replace(/=/g,'');
+  currentUser = { id: uid, name: nama, outlet };
+  localStorage.setItem('lh_session', JSON.stringify(currentUser));
+  enterApp();
+}
+function logout() {
+  localStorage.removeItem('lh_session');
+  currentUser = null;
+  showScreen('login');
+  document.getElementById('topbar').style.display = 'none';
+}
+function checkSession() {
+  try {
+    const s = JSON.parse(localStorage.getItem('lh_session'));
+    if (s && s.id) { currentUser = s; enterApp(); }
+  } catch {}
+}
+function enterApp() {
+  document.getElementById('topbar').style.display = 'flex';
+  document.getElementById('tb-name').textContent = currentUser.name;
+  document.getElementById('tb-outlet').textContent = currentUser.outlet;
+  document.getElementById('tb-avatar').textContent = currentUser.name[0].toUpperCase();
+  document.getElementById('dash-name').textContent = currentUser.name.split(' ')[0];
+  loadDashboard();
+  showScreen('dashboard');
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+function loadDashboard() {
+  const prog = getProgress(currentUser.id);
+  // Marketing progress
+  const mkMods = Object.keys(MODULES).length;
+  let mkDone = 0;
+  Object.values(MODULES).forEach(m => { if (prog[m.id]?.completed) mkDone++; });
+  const mkPct = Math.round((mkDone / mkMods) * 100);
+  document.getElementById('prog-marketing').style.width = mkPct + '%';
+  document.getElementById('pct-marketing').textContent = mkPct + '%';
+  // Overall stats
+  let totalDone = mkDone, totalQuiz = 0;
+  Object.values(MODULES).forEach(m => { if (prog[m.id]?.quizPassed) totalQuiz++; });
+  const totalMods = mkMods; // expand when more academies added
+  const overallPct = Math.round((totalDone / totalMods) * 100);
+  // Ring
+  const circumference = 213.6;
+  const offset = circumference - (overallPct / 100) * circumference;
+  document.getElementById('ring-fill').style.strokeDashoffset = offset;
+  document.getElementById('ring-num').textContent = overallPct + '%';
+  document.getElementById('stat-modul').textContent = totalDone;
+  document.getElementById('stat-quiz').textContent = totalQuiz;
+  document.getElementById('op-desc').textContent = totalDone === 0
+    ? 'Mulai belajar dari Akademi Marketing. Setiap modul yang selesai akan tercatat di sini.'
+    : `Kamu sudah menyelesaikan ${totalDone} dari ${totalMods} modul. Terus semangat!`;
+  // Daily tip
+  const tipIdx = new Date().getDay() + (new Date().getDate() % 3);
+  document.getElementById('daily-tip-text').innerHTML = DAILY_TIPS[tipIdx % DAILY_TIPS.length];
+}
+
+// ══════════════════════════════════════════
+// ACADEMY
+// ══════════════════════════════════════════
+const ACADEMIES = {
+  marketing: {
+    badge: '📊 Akademi Marketing',
+    title: 'Marketing & Penjualan',
+    desc: 'Pelajari cara memahami ilmu marketing secara menyeluruh, membuat promo yang tepat sasaran, dan mengeksekusinya dengan efektif di lapangan.',
+    ac: 'var(--amk)',
+    modules: ['mod0','mod1','mod2','mod3','mod4','mod5']
+  }
+};
+
+function openAcademy(key) {
+  currentAcademy = key;
+  const ac = ACADEMIES[key];
+  document.documentElement.style.setProperty('--ac', ac.ac);
+  document.getElementById('ah-badge').textContent = ac.badge;
+  document.getElementById('ah-title').textContent = ac.title;
+  document.getElementById('ah-desc').textContent = ac.desc;
+  // Progress
+  const prog = getProgress(currentUser.id);
+  let done = 0;
+  ac.modules.forEach(mid => { if (prog[mid]?.completed) done++; });
+  const pct = Math.round((done / ac.modules.length) * 100);
+  document.getElementById('ah-fill').style.width = pct + '%';
+  document.getElementById('ah-pct-label').textContent = pct + '%';
+  document.getElementById('ah-pct').textContent = `${done} / ${ac.modules.length} modul`;
+  // Module list
+  const list = document.getElementById('module-list');
+  list.innerHTML = ac.modules.map((mid, i) => {
+    const m = MODULES[mid];
+    const isDone = prog[mid]?.completed;
+    return `
+      <div class="module-item ${isDone ? '' : ''}" onclick="openModule('${mid}')">
+        <div class="mi-num ${isDone ? 'done' : ''}">${isDone ? '✓' : i}</div>
+        <div class="mi-info">
+          <div class="mi-label">Modul ${i} · ${m.tag}</div>
+          <div class="mi-title">${m.title}</div>
+          <div class="mi-desc">${m.desc}</div>
+        </div>
+        <div class="mi-status ${isDone ? 'done' : 'pending'}">${isDone ? '✓ Selesai' : 'Mulai →'}</div>
+      </div>`;
+  }).join('');
+  showScreen('academy');
+}
+
+function goToDashboard() { loadDashboard(); showScreen('dashboard'); }
+function goToAcademy() { openAcademy(currentAcademy); showScreen('academy'); }
+
+// ══════════════════════════════════════════
+// MODULE
+// ══════════════════════════════════════════
+function openModule(mid) {
+  currentModuleId = mid;
+  const m = MODULES[mid];
+  document.getElementById('mod-content').innerHTML = `
+    <div class="mod-header fade-up">
+      <div class="mod-badge">${m.badge}</div>
+      <h2>${m.title}</h2>
+      <p>${m.subtitle}</p>
+    </div>
+    <div class="fade-up">${m.content}
+      <div class="start-quiz-cta">
+        <div class="sqc-icon">🧠</div>
+        <h3>Siap Uji Pemahamanmu?</h3>
+        <p>Materi sudah dibaca? Klik tombol di bawah untuk mulai quiz. Materi tidak bisa dilihat saat quiz berlangsung.</p>
+        <button class="start-quiz-btn" onclick="startQuiz('${mid}')">Mulai Quiz →</button>
+      </div>
+    </div>`;
+  showScreen('module-view');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════
+function startQuiz(mid) {
+  currentModuleId = mid;
+  quizAnswered = {}; quizScore = 0;
+  const m = MODULES[mid];
+  document.getElementById('qv-badge').textContent = m.badge;
+  document.getElementById('qv-title').textContent = '🧠 Quiz: ' + m.title;
+  document.getElementById('qv-dots').innerHTML = m.quiz.map((_,i) => `<div class="q-dot" id="qdot-${mid}-${i}"></div>`).join('');
+  document.getElementById('qv-final').classList.remove('show');
+  document.getElementById('qv-question').style.display = 'block';
+  showScreen('quiz-view');
+  showQuestion(mid, 0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showQuestion(mid, qi) {
+  const m = MODULES[mid];
+  const q = m.quiz[qi];
+  const total = m.quiz.length;
+  document.getElementById('qv-counter').textContent = `Soal ${qi + 1} dari ${total}`;
+  for (let i = 0; i < total; i++) {
+    const d = document.getElementById(`qdot-${mid}-${i}`);
+    if (!d) continue;
+    d.className = 'q-dot' + (i < qi ? ' done' : i === qi ? ' current' : '');
+  }
+  const answered = quizAnswered[`${mid}-${qi}`];
+  document.getElementById('qv-question').innerHTML = `
+    <div class="single-question">
+      <div class="sq-text">${q.q}</div>
+      <div class="sq-options">${q.opts.map((opt, oi) => `
+        <div class="sq-opt ${answered !== undefined ? 'disabled' + (oi === q.correct ? ' correct' : oi === answered ? ' wrong' : '') : ''}"
+             id="sqopt-${mid}-${qi}-${oi}" onclick="answerQuestion('${mid}',${qi},${oi})">
+          <div class="sq-mark">${answered !== undefined ? (oi === q.correct ? '✓' : oi === answered ? '✗' : '') : ''}</div>${opt}
+        </div>`).join('')}
+      </div>
+      <div class="sq-feedback ${answered !== undefined ? (answered === q.correct ? 'show-correct' : 'show-wrong') : ''}" id="sqfb-${mid}-${qi}">
+        ${answered !== undefined ? (answered === q.correct ? '✅ ' : '❌ ') + q.feedback : ''}
+      </div>
+      <button class="sq-next-btn ${answered !== undefined ? 'visible' : ''}" id="sqnext-${mid}-${qi}" onclick="nextQuestion('${mid}',${qi})">
+        ${qi < total - 1 ? 'Soal Berikutnya →' : 'Lihat Hasil →'}
+      </button>
+    </div>`;
+}
+
+function answerQuestion(mid, qi, chosen) {
+  const key = `${mid}-${qi}`;
+  if (quizAnswered[key] !== undefined) return;
+  quizAnswered[key] = chosen;
+  const q = MODULES[mid].quiz[qi];
+  const isCorrect = chosen === q.correct;
+  if (isCorrect) quizScore++;
+  q.opts.forEach((_, oi) => {
+    const el = document.getElementById(`sqopt-${mid}-${qi}-${oi}`);
+    if (!el) return;
+    el.classList.add('disabled');
+    if (oi === q.correct) { el.classList.add('correct'); el.querySelector('.sq-mark').textContent = '✓'; }
+    else if (oi === chosen) { el.classList.add('wrong'); el.querySelector('.sq-mark').textContent = '✗'; }
+  });
+  const fb = document.getElementById(`sqfb-${mid}-${qi}`);
+  fb.className = 'sq-feedback ' + (isCorrect ? 'show-correct' : 'show-wrong');
+  fb.textContent = (isCorrect ? '✅ ' : '❌ ') + q.feedback;
+  const nb = document.getElementById(`sqnext-${mid}-${qi}`);
+  if (nb) nb.classList.add('visible');
+  const d = document.getElementById(`qdot-${mid}-${qi}`);
+  if (d) d.classList.add('done');
+}
+
+function nextQuestion(mid, qi) {
+  const total = MODULES[mid].quiz.length;
+  if (qi + 1 < total) { showQuestion(mid, qi + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  else showQuizFinal(mid);
+}
+
+function showQuizFinal(mid) {
+  const total = MODULES[mid].quiz.length;
+  const pct = Math.round((quizScore / total) * 100);
+  document.getElementById('qv-question').style.display = 'none';
+  document.getElementById('qf-num').textContent = quizScore;
+  document.getElementById('qf-total').textContent = `dari ${total}`;
+  document.getElementById('qf-heading').textContent = pct === 100 ? '🎉 Sempurna!' : pct >= 50 ? '👍 Bagus!' : '📖 Perlu Ulang';
+  document.getElementById('qf-msg').textContent = pct === 100
+    ? 'Kamu menguasai modul ini dengan baik!'
+    : pct >= 50 ? `Skor ${quizScore}/${total}. Pertimbangkan untuk membaca ulang materi.`
+    : `Skor ${quizScore}/${total}. Disarankan baca ulang materi sebelum lanjut.`;
+  // Save progress
+  const prog = getProgress(currentUser.id);
+  if (!prog[mid]) prog[mid] = {};
+  prog[mid].completed = true;
+  if (pct >= 50) prog[mid].quizPassed = true;
+  prog[mid].score = quizScore;
+  prog[mid].total = total;
+  prog[mid].completedAt = new Date().toISOString();
+  saveProgress(currentUser.id, prog);
+  // Next module
+  const ac = ACADEMIES[currentAcademy];
+  const idx = ac.modules.indexOf(mid);
+  const nextMid = ac.modules[idx + 1];
+  const nextBtn = document.getElementById('qf-next-btn');
+  if (nextMid) { nextBtn.textContent = `Modul Berikutnya →`; nextBtn.style.display = 'inline-flex'; }
+  else { nextBtn.textContent = '🏠 Kembali ke Akademi'; nextBtn.style.display = 'inline-flex'; }
+  for (let i = 0; i < total; i++) { const d = document.getElementById(`qdot-${mid}-${i}`); if (d) d.classList.add('done'); }
+  document.getElementById('qv-final').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goNextFromQuiz() {
+  const ac = ACADEMIES[currentAcademy];
+  const idx = ac.modules.indexOf(currentModuleId);
+  if (idx + 1 < ac.modules.length) openModule(ac.modules[idx + 1]);
+  else goToAcademy();
+}
+function reviewMaterial() { openModule(currentModuleId); }
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function toggleCheck(el) { el.classList.toggle('checked'); }
+function toggleBranch(el) {
+  const open = el.classList.contains('open');
+  document.querySelectorAll('.branch-card').forEach(c => c.classList.remove('open'));
+  if (!open) el.classList.add('open');
+}
+function togglePromo(el) {
+  const open = el.classList.contains('open');
+  document.querySelectorAll('.promo-type').forEach(p => p.classList.remove('open'));
+  if (!open) el.classList.add('open');
+}
+function generateWorksheet() {
+  const produk = document.getElementById('ws-produk')?.value || '';
+  const channel = document.getElementById('ws-channel')?.value || '';
+  const tujuan = document.getElementById('ws-tujuan')?.value || '';
+  const target = document.getElementById('ws-target')?.value || '';
+  const durasi = document.getElementById('ws-durasi')?.value || '';
+  const mekanisme = document.getElementById('ws-mekanisme')?.value || '';
+  const deskripsi = document.getElementById('ws-deskripsi')?.value || '';
+  const kpi = document.getElementById('ws-kpi')?.value || '';
+  if (!tujuan || !mekanisme) { alert('Mohon isi minimal Tujuan dan Mekanisme Promo.'); return; }
+  const tMap = { awareness:'🆕 Awareness', traffic:'🚶 Traffic', konversi:'🛒 Konversi', retensi:'🔁 Retensi' };
+  const tips = { awareness:'Prioritaskan jangkauan. Buat konsumen mudah mencoba tanpa risiko.', traffic:'Gunakan urgensi — waktu terbatas menciptakan alasan untuk datang.', konversi:'Buat penawaran sulit ditolak di titik keputusan. Siapkan stok ekstra.', retensi:'Buat program mudah diklaim. Ingatkan pelanggan soal keistimewaan mereka.' };
+  const result = document.getElementById('ws-result');
+  result.innerHTML = `<strong>📋 Ringkasan Rencana Promo</strong><br><br>
+    ${produk ? `<strong>Produk:</strong> ${produk}<br>` : ''}
+    ${channel ? `<strong>Channel:</strong> ${channel}<br>` : ''}
+    <strong>Tujuan:</strong> ${tMap[tujuan]}<br>
+    ${target ? `<strong>Target:</strong> ${target}<br>` : ''}
+    ${durasi ? `<strong>Durasi:</strong> ${durasi}<br>` : ''}
+    <strong>Mekanisme:</strong> ${mekanisme}<br>
+    ${deskripsi ? `<strong>Deskripsi:</strong> ${deskripsi}<br>` : ''}
+    ${kpi ? `<strong>KPI:</strong> ${kpi}<br>` : ''}
+    <br><em>💡 Tips: ${tips[tujuan]}</em>`;
+  result.classList.add('show');
+}
+
+// ══════════════════════════════════════════
+// MODULE DATA
+// ══════════════════════════════════════════
+const MODULES = {
+  mod0: {
+    id: 'mod0', tag: 'Fondasi', title: 'Peta Ilmu Marketing',
+    desc: 'Kenali cabang-cabang ilmu marketing dan posisi Promosi di dalamnya.',
+    badge: '🗺️ Modul 0 · Fondasi',
+    subtitle: 'Sebelum bicara soal promo, kamu perlu tahu dulu: promo itu ada di mana dalam ilmu marketing yang lebih luas?',
+    content: `
+      <div class="content-block">
+        <div class="block-title"><div class="block-dot"></div>Marketing adalah Ilmu yang Luas</div>
+        <div class="prose"><p>Marketing bukan hanya tentang iklan atau diskon. Ada banyak cabang spesialisasi yang masing-masing punya fokus berbeda. Klik tiap kartu untuk melihat detail.</p></div>
+        <div style="margin-top:14px">
+          ${[
+            ['2A6EBB','🌐','Pemasaran Digital','Digital Marketing','Cabang paling pesat — memanfaatkan platform digital untuk menjangkau konsumen secara langsung dan terukur.',[['SEO','Optimasi agar muncul di peringkat atas mesin pencari'],['Social Media Marketing','Strategi lewat Instagram, TikTok, Facebook'],['Content Marketing','Konten bernilai untuk menarik dan mempertahankan audiens'],['Email Marketing','Pesan promosi langsung ke daftar kontak pelanggan']]],
+            ['C4831A','📣','Komunikasi Pemasaran','Marketing Communication','Cara perusahaan menyampaikan pesan merek kepada publik.',[['Public Relations','Mengelola citra dan reputasi di mata publik'],['Advertising','Media berbayar untuk promosi produk'],['Sales Promotion','Aktivitas promo langsung untuk mendorong pembelian segera']]],
+            ['7B3FC4','💎','Manajemen Merek','Brand Management','Pengembangan identitas merek agar punya posisi kuat di benak konsumen.',[['Brand Identity','Logo, warna, tone of voice, nilai perusahaan'],['Brand Positioning','Posisi unik merek vs kompetitor'],['Brand Equity','Nilai jangka panjang dari loyalitas konsumen']]],
+            ['D97706','🔍','Riset & Analisis Pasar','Market Research','Menggunakan data untuk memahami perilaku konsumen dan efektivitas kampanye.',[['Consumer Insights','Survei & wawancara untuk memahami motivasi konsumen'],['Marketing Analytics','Analisis data untuk ukur efektivitas kampanye'],['Competitive Analysis','Pemantauan tren pasar dan strategi kompetitor']]],
+            ['0D7C66','🎯','Pemasaran Strategis','Strategic Marketing','Perencanaan jangka panjang menggunakan Marketing Mix — rumah dari konsep Promosi.',[['4P Marketing Mix','Product · Price · Place · Promotion'],['7P Extended','Tambahan People, Process, Physical Evidence untuk jasa'],['Segmentasi & Targeting','Menentukan segmen pasar yang paling potensial']]],
+            ['DB2777','🛒','Pemasaran Ritel','Sales & Retail','Interaksi langsung dengan konsumen di titik penjualan.',[['Merchandising','Penataan produk di toko untuk dorong pembelian'],['CRM','Manajemen hubungan jangka panjang dengan pelanggan'],['Trade Marketing','Strategi promo untuk channel distribusi & retailer']]]
+          ].map(([color,icon,title,en,desc,subs]) => `
+            <div class="branch-card" style="--bc:#${color}" onclick="toggleBranch(this)">
+              <div class="bc-head">
+                <div class="bc-ico" style="background:color-mix(in srgb,#${color} 12%,transparent)">${icon}</div>
+                <div class="bc-ttl"><h4>${title}</h4><span>${en}</span></div>
+                <div class="bc-tog">▾</div>
+              </div>
+              <div class="bc-body"><div class="bc-body-inner">
+                <p>${desc}</p>
+                <div class="bc-subs">${subs.map(([s,d])=>`<div class="bc-sub"><div class="bc-sdot" style="background:#${color}"></div><div class="bc-stxt"><strong>${s}</strong><span>${d}</span></div></div>`).join('')}</div>
+              </div></div>
+            </div>`).join('')}
+        </div>
+        <div class="promo-spotlight">
+          <div class="ps-icon">📍</div>
+          <div class="ps-text">
+            <h5>Posisi Promo dalam Peta Marketing</h5>
+            <p>Promo (Promotion) adalah salah satu dari <strong>4P dalam Marketing Mix</strong> di cabang Pemasaran Strategis. Modul-modul berikutnya akan membahas cara membuat promo yang tepat sasaran.</p>
+          </div>
+        </div>
+      </div>`,
+    quiz: [
+      { q:'Promotion adalah bagian dari konsep apa dalam ilmu Marketing?', opts:['Brand Management','Digital Marketing','4P Marketing Mix dalam Pemasaran Strategis','Market Research & Analytics'], correct:2, feedback:'Tepat! Promotion adalah salah satu dari 4P Marketing Mix (Product, Price, Place, Promotion) dalam cabang Pemasaran Strategis.' },
+      { q:'Cabang ilmu marketing yang paling berfokus pada interaksi langsung di toko adalah?', opts:['Pemasaran Digital','Manajemen Merek','Pemasaran Ritel & Penjualan','Riset & Analisis Pasar'], correct:2, feedback:'Benar! Sales & Retail Marketing berfokus pada titik penjualan langsung — termasuk merchandising, CRM, dan trade marketing.' },
+      { q:'3P tambahan dalam 7P Marketing Mix (di luar 4P) adalah?', opts:['People, Process, Physical Evidence','Promotion, Price, Place','Positioning, Planning, Profit','People, Promotion, Performance'], correct:0, feedback:'Tepat! 3P tambahan adalah People, Process, Physical Evidence — relevan terutama untuk bisnis jasa.' }
+    ]
+  },
+  mod1: {
+    id:'mod1', tag:'Pengantar', title:'Kenapa Promo Sering Gagal?',
+    desc:'Temukan mitos dan kesalahan umum yang sering dilakukan tim marketing.',
+    badge:'🚨 Modul 1 · Pengantar',
+    subtitle:'Sebelum belajar cara membuat promo yang baik, kita perlu tahu dulu kesalahan-kesalahan umum yang sering terjadi.',
+    content:`
+      <div class="content-block">
+        <div class="block-title"><div class="block-dot"></div>Mitos yang Sering Dipercaya</div>
+        <div class="cards-row">
+          <div class="mini-card"><div class="mc-icon">❌</div><h5>"Promo besar = penjualan besar"</h5><p>Diskon 50% bisa meningkatkan volume tapi menghancurkan margin. Hasilnya? Rugi meski ramai.</p></div>
+          <div class="mini-card"><div class="mc-icon">❌</div><h5>"Promo bisa dipakai kapan saja"</h5><p>Promo tanpa konteks tepat bisa merusak persepsi harga normal di benak konsumen.</p></div>
+          <div class="mini-card"><div class="mc-icon">❌</div><h5>"Promo = diskon harga"</h5><p>Ada banyak bentuk promo selain diskon. Bundling, BOGO, cashback — masing-masing punya efek berbeda.</p></div>
+        </div>
+      </div>
+      <div class="content-block">
+        <div class="block-title"><div class="block-dot"></div>3 Penyebab Utama Promo Gagal</div>
+        <div class="check-list">
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text"><h5>🎯 Tidak ada tujuan yang jelas</h5><p>Promo dibuat karena "kompetitor lagi promo" — bukan karena ada tujuan bisnis yang spesifik.</p></div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text"><h5>🧮 Tidak dihitung dulu angkanya</h5><p>Promo diluncurkan tanpa kalkulasi margin. Ramai dikunjungi tapi ternyata rugi per transaksi.</p></div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text"><h5>📦 Salah pilih jenis promo</h5><p>Flash sale untuk tujuan retensi — padahal flash sale lebih cocok untuk traffic baru.</p></div></div>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:var(--muted)">👆 Klik tiap poin untuk menandai yang sudah kamu pahami</div>
+      </div>
+      <div class="case-study">
+        <div class="cs-tag">📍 Studi Kasus · Retail Indonesia</div>
+        <h4>Promo "Diskon 70%" yang Justru Merugikan</h4>
+        <p>Sebuah minimarket lokal di Surabaya menjalankan promo diskon 70% untuk snack impor selama seminggu tanpa batasan pembelian. Volume melonjak 400%, tapi margin per produk jadi negatif.</p>
+        <div class="cs-result"><strong>Pelajaran:</strong> Promo yang "viral" belum tentu menguntungkan. Selalu hitung margin sebelum menentukan besaran diskon.</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">💡 Ingat Selalu</div>
+        <p><strong>Promo adalah alat untuk mencapai tujuan bisnis — bukan tujuan itu sendiri.</strong></p>
+      </div>`,
+    quiz:[
+      {q:'Apa penyebab utama promo sering gagal?',opts:['Anggaran terlalu kecil','Tidak ada tujuan yang jelas sebelum membuat promo','Kompetitor tidak ikut promo','Produk kurang menarik'],correct:1,feedback:'Tepat! Penyebab paling umum adalah promo dibuat tanpa tujuan bisnis yang spesifik.'},
+      {q:'Mana pernyataan yang BENAR tentang promo?',opts:['Promo besar selalu menghasilkan keuntungan besar','Promo adalah tujuan utama marketing','Promo hanya terbatas pada diskon harga','Promo adalah alat untuk mencapai tujuan bisnis'],correct:3,feedback:'Benar! Promo adalah ALAT untuk mencapai tujuan bisnis. Banyak bentuk promo selain diskon.'}
+    ]
+  },
+  mod2: {
+    id:'mod2', tag:'Framework', title:'Mulai dari Tujuan Promo',
+    desc:'4 tujuan utama promo di Retail/FMCG dan cara menentukannya.',
+    badge:'🎯 Modul 2 · Framework',
+    subtitle:'Setiap promo yang berhasil dimulai dari tujuan yang jelas. Ada 4 tujuan utama yang perlu kamu kenali.',
+    content:`
+      <div class="content-block">
+        <div class="block-title"><div class="block-dot"></div>4 Tujuan Utama Promo di Retail/FMCG</div>
+        <div class="cards-row">
+          <div class="mini-card" style="border-top:3px solid var(--amk)"><div class="mc-icon">🆕</div><h5>Awareness</h5><p>Memperkenalkan produk baru atau merek ke konsumen yang belum pernah mencoba.</p></div>
+          <div class="mini-card" style="border-top:3px solid var(--ah)"><div class="mc-icon">🚶</div><h5>Traffic</h5><p>Mendorong lebih banyak orang untuk datang ke toko atau membuka aplikasi.</p></div>
+          <div class="mini-card" style="border-top:3px solid var(--ak)"><div class="mc-icon">🛒</div><h5>Konversi</h5><p>Mengubah pengunjung yang sudah ada menjadi pembeli nyata.</p></div>
+          <div class="mini-card" style="border-top:3px solid var(--am)"><div class="mc-icon">🔁</div><h5>Retensi</h5><p>Membuat pelanggan lama kembali membeli dan tidak pindah ke kompetitor.</p></div>
+        </div>
+      </div>
+      <div class="case-study">
+        <div class="cs-tag">📍 Studi Kasus · Alfamart</div>
+        <h4>Promo "Produk Baru Gratis Coba" — Tujuan: Awareness</h4>
+        <p>Alfamart sering menempatkan produk FMCG baru di meja kasir dengan label "Coba Gratis dengan Pembelian Min. Rp50.000". Tujuannya bukan traffic, tapi memperkenalkan produk baru ke konsumen yang sudah ada di toko.</p>
+        <div class="cs-result"><strong>Tujuan jelas = Eksekusi tepat.</strong> Karena tujuannya awareness, mereka tidak perlu diskon besar — cukup sampling strategis di titik pembelian.</div>
+      </div>
+      <div class="case-study">
+        <div class="cs-tag">📍 Studi Kasus · Indomaret</div>
+        <h4>Promo "Senin-Selasa Hemat" — Tujuan: Traffic</h4>
+        <p>Indomaret secara rutin mengadakan promo spesial hari Senin-Selasa untuk mendistribusikan traffic kunjungan agar tidak hanya menumpuk di akhir pekan.</p>
+        <div class="cs-result"><strong>Tujuan traffic → diskon tajam di hari sepi.</strong> Strategi ini meratakan kunjungan dan meningkatkan utilisasi toko di hari kerja.</div>
+      </div>
+      <div class="highlight-box warning">
+        <div class="hb-icon">⚠️</div>
+        <div class="hb-text"><h5>Jangan Campur Tujuan dalam Satu Promo</h5><p>Promo yang mencoba mencapai semua tujuan sekaligus biasanya tidak efektif untuk tujuan mana pun. Fokus pada satu tujuan utama per promo.</p></div>
+      </div>`,
+    quiz:[
+      {q:'Indomaret membuat promo khusus hari Senin untuk meningkatkan kunjungan di hari sepi. Apa tujuan promo ini?',opts:['Awareness','Traffic','Retensi','Konversi'],correct:1,feedback:'Tepat! Tujuannya adalah traffic — mendistribusikan kunjungan agar tidak menumpuk di akhir pekan saja.'},
+      {q:'Brand baru ingin konsumen mencoba produknya untuk pertama kali. Tujuan promo yang sesuai adalah?',opts:['Retensi','Konversi','Awareness','Traffic'],correct:2,feedback:'Benar! Awareness adalah tujuan yang tepat untuk memperkenalkan produk baru ke konsumen yang belum pernah mencobanya.'},
+      {q:'Praktik TERBAIK saat membuat promo adalah?',opts:['Satu promo untuk semua tujuan sekaligus','Fokus pada satu tujuan utama per promo','Selalu gunakan diskon untuk semua tujuan','Tiru saja promo kompetitor'],correct:1,feedback:'Tepat! Promo yang fokus pada satu tujuan jauh lebih efektif dibanding mencoba mencapai semua tujuan dalam satu promo.'}
+    ]
+  },
+  mod3: {
+    id:'mod3', tag:'Katalog Promo', title:'Jenis-Jenis Promo & Kapan Pakainya',
+    desc:'Kenali 6 jenis mekanisme promo, kelebihan, risiko, dan contoh nyata.',
+    badge:'🧩 Modul 3 · Katalog Promo',
+    subtitle:'Ada banyak mekanisme promo selain diskon. Kenali tiap jenisnya dan kapan waktu yang tepat menggunakannya.',
+    content:`
+      <div class="content-block">
+        <div class="block-title"><div class="block-dot"></div>6 Jenis Mekanisme Promo Utama</div>
+        ${[
+          ['🏷️','Diskon Langsung','Potongan harga langsung dari harga normal','Jenis paling umum. Harga produk dipotong langsung. Cocok untuk mendorong traffic atau menghabiskan stok lama.','Mudah dipahami konsumen, respons cepat, cocok flash sale.','Mengikis margin, konsumen terbiasa menunggu promo.'],
+          ['🎁','Buy X Get Y (BOGO)','Beli sekian, dapat gratis atau hadiah','Konsumen beli produk tertentu dan dapat gratis tambahan. Contoh: "Beli 2 Gratis 1". Bagus untuk konversi.','Nilai terasa besar, bisa habiskan stok slow-moving.','Konsumen stockpile — beli banyak lalu tidak beli berbulan-bulan.'],
+          ['📦','Bundling','Paket beberapa produk dengan harga spesial','Beberapa produk dijual bersamaan dengan harga lebih hemat. Bagus untuk awareness produk baru.','Mengenalkan produk baru lewat produk yang sudah dicintai.','Stok jadi tidak seimbang jika konsumen hanya mau produk tertentu.'],
+          ['💸','Cashback & Poin','Kembalian uang atau poin untuk transaksi berikutnya','Program loyalty. Konsumen dapat poin yang bisa ditukar hadiah. Cocok untuk retensi.','Menciptakan loyalitas jangka panjang, data konsumen terkumpul.','Butuh sistem yang baik, konsumen harus diingatkan untuk klaim poin.'],
+          ['⚡','Flash Sale','Promo dalam waktu sangat terbatas','Diskon tajam yang hanya berlaku beberapa jam atau satu hari. Menciptakan urgensi (FOMO).','Traffic melonjak cepat, efektif di media sosial.','Terlalu sering = konsumen menunggu flash sale, tidak beli di harga normal.'],
+          ['🛒','Multi-Buy','Makin banyak beli, makin hemat','Harga per unit turun saat beli lebih banyak. Contoh: "Beli 3 lebih hemat dari beli 1". Dorong konversi.','Meningkatkan basket size per transaksi.','Efektif hanya untuk produk yang konsumennya memang butuh stok banyak.']
+        ].map(([icon,title,sub,desc,pro,con])=>`
+          <div class="promo-type" onclick="togglePromo(this)">
+            <div class="promo-type-header">
+              <div class="promo-type-icon">${icon}</div>
+              <div><h5>${title}</h5><p>${sub}</p></div>
+              <div class="promo-toggle">▾</div>
+            </div>
+            <div class="promo-body"><div class="promo-body-inner">
+              <p>${desc}</p>
+              <div class="pro-con">
+                <div class="pro"><strong>✅ Kelebihan</strong>${pro}</div>
+                <div class="con"><strong>⚠️ Risiko</strong>${con}</div>
+              </div>
+            </div></div>
+          </div>`).join('')}
+      </div>`,
+    quiz:[
+      {q:'Brand ingin menghabiskan stok produk mendekati expired dalam 2 hari. Promo apa yang paling tepat?',opts:['Cashback & Poin','Multi-buy','Flash Sale / Limited Time','Bundling'],correct:2,feedback:'Tepat! Flash Sale menciptakan urgensi dalam waktu singkat — cocok untuk menghabiskan stok mendesak dengan cepat.'},
+      {q:'Program "kumpul 10 poin dapat diskon" paling cocok untuk tujuan promo apa?',opts:['Awareness produk baru','Meningkatkan traffic hari sepi','Menghabiskan stok lama','Retensi pelanggan lama'],correct:3,feedback:'Benar! Sistem poin reward dirancang untuk menciptakan loyalitas dan mendorong repeat purchase — khas untuk tujuan retensi.'}
+    ]
+  },
+  mod4: {
+    id:'mod4', tag:'Decision Tool', title:'Framework MATCH: Tujuan → Promo',
+    desc:'Matriks praktis untuk mencocokkan tujuan dengan jenis promo yang tepat.',
+    badge:'🔗 Modul 4 · Decision Tool',
+    subtitle:'Setelah tahu tujuan dan jenis promo, saatnya mencocokkan keduanya dengan Framework MATCH.',
+    content:`
+      <div class="content-block">
+        <div class="block-title"><div class="block-dot"></div>Matriks MATCH</div>
+        <div style="overflow-x:auto">
+        <table class="match-table">
+          <thead><tr><th>Tujuan</th><th>Mekanisme yang Cocok</th><th>Contoh Nyata</th></tr></thead>
+          <tbody>
+            <tr><td class="goal-cell">🆕 Awareness</td><td><div class="tag-list"><span class="tag">Free Sample</span><span class="tag">Trial Gratis</span><span class="tag">Bundling Produk Baru</span></div></td><td style="color:var(--muted)">Alfamart: produk baru gratis dicoba di kasir dengan min. pembelian</td></tr>
+            <tr><td class="goal-cell">🚶 Traffic</td><td><div class="tag-list"><span class="tag">Flash Sale</span><span class="tag">Promo Hari Tertentu</span><span class="tag">Diskon Besar Sesaat</span></div></td><td style="color:var(--muted)">Indomaret: promo "Senin-Selasa Hemat" untuk ratakan kunjungan</td></tr>
+            <tr><td class="goal-cell">🛒 Konversi</td><td><div class="tag-list"><span class="tag">BOGO</span><span class="tag">Multi-buy</span><span class="tag">Diskon Ambang Batas</span></div></td><td style="color:var(--muted)">Superindo: "Beli 3 Hemat 20%" di produk kebutuhan harian</td></tr>
+            <tr><td class="goal-cell">🔁 Retensi</td><td><div class="tag-list"><span class="tag">Loyalty Points</span><span class="tag">Cashback Member</span><span class="tag">Harga Khusus Member</span></div></td><td style="color:var(--muted)">Alfamart Poin: kumpul poin per transaksi, tukar hadiah</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+      <div class="case-study">
+        <div class="cs-tag">📍 Simulasi · Brand Minuman</div>
+        <h4>Minuman Teh Rasa Baru Mau Diluncurkan</h4>
+        <p>Brand minuman teh ingin meluncurkan varian rasa baru di Indomaret. Target: konsumen yang biasa beli minuman teh di minimarket tapi belum pernah coba varian baru ini.</p>
+        <div class="cs-result"><strong>Tujuan → Awareness.</strong> Mekanisme MATCH: Bundling produk baru + varian lama, atau free trial ukuran kecil. Bukan Flash Sale — karena tujuannya awareness, bukan traffic.</div>
+      </div>
+      <div class="highlight-box tip">
+        <div class="hb-icon">💡</div>
+        <div class="hb-text"><h5>Tips Kombinasi MATCH</h5><p>Untuk kampanye besar, kombinasikan 2 mekanisme: <strong>Bundling (Awareness)</strong> di minggu 1, lanjut <strong>Multi-buy (Konversi)</strong> di minggu 2 setelah konsumen familiar dengan produknya.</p></div>
+      </div>`,
+    quiz:[
+      {q:'Brand ingin pelanggan lama terus membeli dan tidak pindah kompetitor. Mekanisme MATCH yang paling tepat?',opts:['Flash Sale 1 hari','Program Loyalty Points / Cashback Member','Free Sample di kasir','Diskon besar-besaran'],correct:1,feedback:'Benar! Untuk retensi, program loyalty points atau cashback member menciptakan insentif untuk terus kembali.'},
+      {q:'Supermarket ingin tingkatkan kunjungan di hari Rabu yang sepi. MATCH menyarankan?',opts:['Bundling produk baru','Program poin reward','Promo spesial hari Rabu / Flash Sale terbatas','Buy 1 Get 1 tanpa batas waktu'],correct:2,feedback:'Tepat! Untuk traffic, promo spesial hari tertentu atau flash sale terbatas menciptakan alasan kuat untuk datang di hari sepi.'}
+    ]
+  },
+  mod5: {
+    id:'mod5', tag:'Praktikal', title:'Cek Sebelum Launch + Worksheet',
+    desc:'Checklist sanity check dan worksheet rancang promo yang bisa langsung diisi.',
+    badge:'✅ Modul 5 · Praktikal',
+    subtitle:'Promo yang baik tidak hanya tepat secara strategi, tapi juga aman secara bisnis. Gunakan checklist ini sebelum launch.',
+    content:`
+      <div class="content-block">
+        <div class="block-title"><div class="block-dot"></div>Checklist Sebelum Launch</div>
+        <div class="check-list">
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text"><h5>🎯 Tujuan sudah jelas</h5><p>Sudah menentukan apakah tujuannya awareness, traffic, konversi, atau retensi.</p></div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text"><h5>🧮 Margin sudah dihitung</h5><p>Harga promo masih di atas HPP. Tidak akan rugi per unit yang terjual.</p></div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text"><h5>📅 Durasi sudah ditetapkan</h5><p>Promo punya tanggal mulai dan berakhir yang jelas. Tidak terlalu lama hingga menghilangkan urgensi.</p></div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text"><h5>📦 Stok sudah disiapkan</h5><p>Perkiraan demand saat promo sudah dibuat. Stok cukup untuk menghindari kehabisan di tengah promo.</p></div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text"><h5>🔗 Tidak ada kanibalisasi</h5><p>Promo produk A tidak akan memakan penjualan produk B yang margin-nya lebih tinggi.</p></div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text"><h5>📊 KPI sudah ditentukan</h5><p>Tahu metrik apa yang diukur: jumlah transaksi, basket size, jumlah pembeli baru, atau repeat purchase rate.</p></div></div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--border);margin:24px 0"></div>
+      <div class="content-block">
+        <div class="block-title"><div class="block-dot"></div>Worksheet: Rancang Promo Kamu</div>
+        <div class="worksheet">
+          <h4>📝 Template Rancangan Promo</h4>
+          <p class="ws-sub">Isi semua kolom untuk merencanakan promo secara terstruktur.</p>
+          <div class="ws-row">
+            <div class="ws-field"><label>Nama Produk / Brand</label><input type="text" id="ws-produk" placeholder="cth: Teh Botol Sosro Rasa Lemon"/></div>
+            <div class="ws-field"><label>Channel Penjualan</label><select id="ws-channel"><option value="">Pilih channel...</option><option>Minimarket</option><option>Supermarket</option><option>Toko Online</option><option>Toko Offline</option><option>Online + Offline</option></select></div>
+          </div>
+          <div class="ws-field"><label>Tujuan Promo</label><select id="ws-tujuan"><option value="">Pilih tujuan...</option><option value="awareness">🆕 Awareness</option><option value="traffic">🚶 Traffic</option><option value="konversi">🛒 Konversi</option><option value="retensi">🔁 Retensi</option></select></div>
+          <div class="ws-row">
+            <div class="ws-field"><label>Target Konsumen</label><input type="text" id="ws-target" placeholder="cth: Ibu rumah tangga 25-40 tahun"/></div>
+            <div class="ws-field"><label>Durasi Promo</label><input type="text" id="ws-durasi" placeholder="cth: 7 hari, 14 hari"/></div>
+          </div>
+          <div class="ws-field"><label>Mekanisme Promo</label><select id="ws-mekanisme"><option value="">Pilih mekanisme...</option><option>Diskon Langsung</option><option>Buy X Get Y (BOGO)</option><option>Bundling Produk</option><option>Cashback / Poin Reward</option><option>Flash Sale / Limited Time</option><option>Multi-buy / Beli Lebih Hemat</option><option>Free Sample / Trial</option></select></div>
+          <div class="ws-field"><label>Deskripsi Promo</label><textarea id="ws-deskripsi" placeholder="Jelaskan mekanisme promo secara detail..."></textarea></div>
+          <div class="ws-field"><label>KPI / Cara Mengukur Keberhasilan</label><input type="text" id="ws-kpi" placeholder="cth: Jumlah trial produk baru meningkat 30% dalam 2 minggu"/></div>
+          <button class="ws-submit" onclick="generateWorksheet()">✨ Lihat Ringkasan Promo</button>
+          <div class="ws-result" id="ws-result"></div>
+        </div>
+      </div>
+      <div class="complete-banner">
+        <div class="cb-icon">🎉</div>
+        <h3>Akademi Marketing Selesai!</h3>
+        <p>Kamu sudah menyelesaikan semua modul Akademi Marketing. Selalu mulai dari tujuan yang jelas sebelum membuat promo apapun.</p>
+        <button class="btn-secondary" style="display:inline-flex;margin:0 auto" onclick="goToAcademy()">← Kembali ke Akademi</button>
+      </div>`,
+    quiz:[
+      {q:'Sebelum meluncurkan promo, hal paling penting yang harus dicek adalah?',opts:['Apakah kompetitor sedang promo','Margin masih positif setelah promo diterapkan','Desain materi promo sudah bagus','Berapa banyak tim yang terlibat'],correct:1,feedback:'Tepat! Memastikan margin masih positif adalah hal krusial — promo yang ramai tapi margin negatif justru merugikan bisnis.'},
+      {q:'Apa yang dimaksud "kanibalisasi" dalam konteks promo?',opts:['Promo terlalu agresif menyerang kompetitor','Promo memakan anggaran terlalu besar','Promo di produk A mengurangi penjualan produk B yang lebih menguntungkan','Promo berjalan terlalu lama'],correct:2,feedback:'Benar! Kanibalisasi terjadi ketika promo satu produk mengalihkan pembelian dari produk lain yang margin-nya lebih tinggi.'}
+    ]
+  }
+};
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+checkSession();
+</script>
+</body>
+</html>
